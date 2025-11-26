@@ -1,0 +1,5 @@
+# Videos folder (users add their own)
+videos/
+
+# Keep the folder structure
+!videos/.gitkeep

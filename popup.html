@@ -95,7 +95,7 @@
       transition: transform 0.2s;
     }
     
-    input[type="text"], input[type="number"] {
+    input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 7px 9px;
       background: #18181b;
@@ -106,7 +106,7 @@
       transition: border-color 0.2s;
     }
     
-    input[type="text"]:focus, input[type="number"]:focus {
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
       outline: none;
       border-color: #3b82f6;
     }
@@ -133,7 +133,6 @@
       cursor: pointer;
       transition: background 0.15s;
     }
-    
     
     input[type="range"]::-webkit-slider-thumb:hover {
       background: #60a5fa;
@@ -162,12 +161,17 @@
       transform: scale(0.98);
     }
     
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
     .btn-primary {
       background: #16a34a;
       color: #fff;
     }
     
-    .btn-primary:hover {
+    .btn-primary:hover:not(:disabled) {
       background: #15803d;
     }
     
@@ -177,7 +181,7 @@
       border: 1px solid #3f3f46;
     }
     
-    .btn-secondary:hover {
+    .btn-secondary:hover:not(:disabled) {
       background: #3f3f46;
     }
     
@@ -259,6 +263,10 @@
     }
     
     .slider-row input[type="range"] {
+      flex: 1;
+    }
+    
+    .slider-row select {
       flex: 1;
     }
     
@@ -424,6 +432,20 @@
       background: #27272a;
       margin: 10px 0;
     }
+    
+    .local-section {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #27272a;
+    }
+    
+    .local-title {
+      font-size: 10px;
+      color: #71717a;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
   </style>
 </head>
 <body>
@@ -443,10 +465,21 @@
       </div>
       <div id="videoSection">
         <div class="two-col">
-          <input id="url" type="text" placeholder="YouTube or MP4 URL">
+          <input id="url" type="text" placeholder="YouTube, Vimeo, or MP4 URL">
           <button id="addPlaylist" class="btn-secondary btn-icon">+</button>
         </div>
         <button id="apply" class="btn-primary">Apply</button>
+        
+        <div class="local-section">
+          <div class="local-title">Local Videos</div>
+          <div class="slider-row">
+            <select id="localVideoPicker">
+              <option value="">Loading...</option>
+            </select>
+            <button id="useLocal" class="btn-secondary btn-icon" style="width: auto; margin: 0; padding: 7px 12px;">Use</button>
+          </div>
+        </div>
+        
         <div id="playlist"></div>
       </div>
     </div>

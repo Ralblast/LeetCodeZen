@@ -1,23 +1,38 @@
 #zf-video {
   position: fixed;
-  top: -5%;
-  left: -5%;
-  width: 110vw;
-  height: 110vh;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: -9999;
   background: #000;
   pointer-events: none;
   overflow: hidden;
 }
 
-#zf-video iframe,
+#zf-video iframe {
+  position: absolute;
+  top: -5%;
+  left: -5%;
+  width: 110%;
+  height: 110%;
+  border: none;
+  pointer-events: none;
+}
+
 #zf-video video {
-  width: 110vw;
-  height: 110vh;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
   object-fit: cover;
   border: none;
-  transform: translateZ(0);
 }
+
 
 .zf-glass {
   background-image: none !important;

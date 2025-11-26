@@ -12,7 +12,7 @@ let focusListenersActive = false;
 let focusKeydownHandler = null;
 let focusKeypressHandler = null;
 let TYPING_TIMEOUT = 6000;
-const DEFAULT_VIDEO = "https://www.youtube.com/watch?v=5qap5aO4i9A";
+const DEFAULT_VIDEO = "https://www.youtube.com/watch?v=jfKfPfyJRdk";
 
 let undoHistory = [];
 const MAX_HISTORY = 15;
@@ -101,40 +101,99 @@ function injectVideo(url) {
   }
 
   const videoUrl = url || DEFAULT_VIDEO;
-  const ytId = extractYouTubeID(videoUrl);
   
-  if (ytId) {
-    const params = [
-      'autoplay=1',
-      'mute=1',
-      'controls=0',
-      'loop=1',
-      `playlist=${ytId}`,
-      'playsinline=1',
-      'modestbranding=1',
-      'rel=0',
-      'iv_load_policy=3',
-      'quality=highres',
-      'vq=hd1080',
-      'hd=1'
-    ].join('&');
-    
-    container.innerHTML = `<iframe 
-      src="https://www.youtube-nocookie.com/embed/${ytId}?${params}" 
-      allow="autoplay; encrypted-media" 
-      frameborder="0"
-      width="1920"
-      height="1080"
-      loading="eager"
-      allowfullscreen
-      onerror="this.src='https://www.youtube-nocookie.com/embed/${ytId}?${params.replace('vq=hd1080', 'vq=hd720')}'"></iframe>`;
+  if (isYouTubeURL(videoUrl)) {
+    const ytId = extractYouTubeID(videoUrl);
+    if (ytId) {
+      const params = [
+        'autoplay=1',
+        'mute=1',
+        'controls=0',
+        'loop=1',
+        `playlist=${ytId}`,
+        'playsinline=1',
+        'modestbranding=1',
+        'rel=0',
+        'iv_load_policy=3',
+        'disablekb=1',
+        'fs=0',
+        'autohide=1',
+        'showinfo=0'
+      ].join('&');
+      
+      container.innerHTML = `<iframe 
+        src="https://www.youtube.com/embed/${ytId}?${params}" 
+        allow="autoplay; encrypted-media" 
+        frameborder="0"
+        width="2560"
+        height="1440"
+        loading="eager"
+        allowfullscreen></iframe>`;
+      
+      setTimeout(() => {
+        const iframe = container.querySelector('iframe');
+        if (iframe && iframe.contentWindow) {
+          try {
+            iframe.contentWindow.postMessage('{"event":"command","func":"setPlaybackQuality","args":["hd1440"]}', '*');
+          } catch(e) {}
+        }
+      }, 2000);
+    }
+
+  } else if (isVimeoURL(videoUrl)) {
+    const vimeoId = extractVimeoID(videoUrl);
+    if (vimeoId) {
+      container.innerHTML = `<iframe 
+        src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&background=1&quality=4k" 
+        frameborder="0"
+        allow="autoplay; fullscreen"
+        allowfullscreen></iframe>`;
+    }
   } else {
-    container.innerHTML = `<video src="${videoUrl}" autoplay loop muted playsinline></video>`;
+    container.innerHTML = '';
+    const video = document.createElement('video');
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    
+    if (videoUrl.startsWith('chrome-extension://')) {
+      video.src = videoUrl;
+    } else {
+      video.crossOrigin = 'anonymous';
+      video.src = videoUrl;
+    }
+    
+    video.onloadeddata = () => {
+      video.play().catch(() => {
+        setTimeout(() => video.play(), 200);
+      });
+    };
+    
+    video.onerror = () => {
+      toast('Video failed to load');
+    };
+    
+    container.appendChild(video);
   }
+}
+
+function isYouTubeURL(url) {
+  return url.includes('youtube.com') || url.includes('youtu.be');
+}
+
+function isVimeoURL(url) {
+  return url.includes('vimeo.com');
 }
 
 function extractYouTubeID(url) {
   const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+  return match ? match[1] : null;
+}
+
+function extractVimeoID(url) {
+  const match = url.match(/vimeo\.com\/(\d+)/);
   return match ? match[1] : null;
 }
 
@@ -658,7 +717,6 @@ function init() {
     document.body.style.setProperty('background', 'transparent', 'important');
     document.documentElement.style.setProperty('background', 'transparent', 'important');
   }, 1000);
-  
 }
 
 if (document.readyState === 'loading') {

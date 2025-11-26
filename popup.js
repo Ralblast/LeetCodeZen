@@ -19,6 +19,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const videoSection = document.getElementById("videoSection");
   const videoToggle = document.getElementById("videoToggle");
   
+  const localVideoPicker = document.getElementById("localVideoPicker");
+  const useLocalBtn = document.getElementById("useLocal");
+  
   const blurSlider = document.getElementById("blurSlider");
   const blurValue = document.getElementById("blurValue");
   
@@ -49,6 +52,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert("⚠️ Open a LeetCode page first");
     window.close();
     return;
+  }
+
+  async function loadLocalVideos() {
+    localVideoPicker.innerHTML = '<option value="">Scanning videos folder...</option>';
+    useLocalBtn.disabled = true;
+    
+    const commonNames = [
+      'space', 'lofi', 'nature', 'study', 'coding', 'rain', 'background',
+      'video1', 'video2', 'video3', 'video4', 'video5',
+      'video', 'bg', 'wallpaper', 'scene'
+    ];
+    
+    const extensions = ['mp4', 'webm', 'mov'];
+    const foundVideos = [];
+    
+    for (const name of commonNames) {
+      for (const ext of extensions) {
+        const filename = `${name}.${ext}`;
+        const url = chrome.runtime.getURL(`videos/${filename}`);
+        
+        try {
+          const response = await fetch(url, { method: 'HEAD' });
+          if (response.ok) {
+            foundVideos.push({
+              name: name.charAt(0).toUpperCase() + name.slice(1),
+              url: url,
+              filename: filename
+            });
+          }
+        } catch (e) {
+          // File doesn't exist, skip
+        }
+      }
+    }
+    
+    localVideoPicker.innerHTML = '';
+    
+    if (foundVideos.length === 0) {
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = 'No videos found in /videos folder';
+      localVideoPicker.appendChild(option);
+      useLocalBtn.disabled = true;
+      useLocalBtn.style.opacity = '0.5';
+    } else {
+      foundVideos.forEach(video => {
+        const option = document.createElement('option');
+        option.value = video.url;
+        option.textContent = `${video.name} (${video.filename})`;
+        localVideoPicker.appendChild(option);
+      });
+      useLocalBtn.disabled = false;
+      useLocalBtn.style.opacity = '1';
+    }
   }
 
   chrome.storage.local.get([
@@ -98,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  loadLocalVideos();
   checkState();
 
   videoToggle.onclick = () => {
@@ -121,30 +179,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     
-    try {
-      new URL(url);
-    } catch {
-      alert("⚠️ Invalid URL");
-      return;
-    }
-    
-    const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
-    const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
-    
-    if (!isYouTube && !isVideo) {
-      const confirm = window.confirm("⚠️ Not a video URL. Continue?");
-      if (!confirm) return;
-    }
-    
-    chrome.storage.local.set({ zfVideo: url }, () => {
-      if (chrome.runtime.lastError) {
-        alert("❌ Storage error");
-      }
-    });
+    chrome.storage.local.set({ zfVideo: url });
     await send({ action: "updateVideo", url });
     
     applyBtn.textContent = "✓";
     setTimeout(() => applyBtn.textContent = "Apply", 1000);
+  };
+
+  useLocalBtn.onclick = async () => {
+    const url = localVideoPicker.value;
+    if (!url) return;
+    
+    videoInput.value = url;
+    chrome.storage.local.set({ zfVideo: url });
+    await send({ action: "updateVideo", url });
+    
+    useLocalBtn.textContent = "✓";
+    setTimeout(() => useLocalBtn.textContent = "Use", 1000);
   };
 
   addPlaylistBtn.onclick = () => {
@@ -405,7 +456,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     stopBtn.style.display = "block";
     status.style.display = "block";
   }
-  
 
   function showStart() {
     brushBtn.style.display = "block";
