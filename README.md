@@ -98,7 +98,7 @@ Built it for myself but figured others might find it useful.
 
 ## License
 
-Do whatever you want with it. No attribution needed.
+Not for any monetization purposes.
 
 ---
 
