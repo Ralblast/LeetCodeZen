@@ -1,116 +1,97 @@
-/* ==================== VIDEO ==================== */
 #zf-video {
-  position:fixed;
-  top:0;left:0;
-  width:100vw;
-  height:100vh;
-  z-index:-9999;
-  background:#000;
-  pointer-events:none;
-  overflow:hidden;
+  position: fixed;
+  top: -5%;
+  left: -5%;
+  width: 110vw;
+  height: 110vh;
+  z-index: -9999;
+  background: #000;
+  pointer-events: none;
+  overflow: hidden;
 }
+
 #zf-video iframe,
 #zf-video video {
-  /* Force larger size for better quality */
-  width:120vw;  /* Changed from 100vw */
-  height:120vh; /* Changed from 100vh */
-  margin-left:-10vw;
-  margin-top:-10vh;
-  object-fit:cover;
-  border:none;
+  width: 110vw;
+  height: 110vh;
+  object-fit: cover;
+  border: none;
+  transform: translateZ(0);
 }
 
-/* ==================== GLASS ==================== */
 .zf-glass {
-  background-image:none !important;
-  box-shadow:none !important;
-  transition:background-color 0.1s linear !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transition: background-color 0.15s ease, backdrop-filter 0.3s ease !important;
 }
 
-/* ==================== HIDDEN (Normal state - when brush OFF) ==================== */
 .zf-hidden {
-  visibility:hidden !important;
-  opacity:0 !important;
-  pointer-events:none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-/* ==================== GHOST MODE (When brush is ON) ==================== */
 body.zf-brush .zf-hidden {
-  /* OVERRIDE everything to make it visible AND clickable */
-  visibility:visible !important;
-  opacity:0.5 !important;
-  pointer-events:auto !important;
-  
-  /* Visual indicator */
-  background:repeating-linear-gradient(
+  visibility: visible !important;
+  opacity: 0.5 !important;
+  pointer-events: auto !important;
+  background: repeating-linear-gradient(
     45deg,
-    rgba(255,50,50,0.2) 0px,
-    rgba(255,50,50,0.2) 10px,
-    rgba(255,50,50,0.35) 10px,
-    rgba(255,50,50,0.35) 20px
+    rgba(255, 50, 50, 0.2) 0px,
+    rgba(255, 50, 50, 0.2) 10px,
+    rgba(255, 50, 50, 0.35) 10px,
+    rgba(255, 50, 50, 0.35) 20px
   ) !important;
-  
-  outline:3px dashed #ff4444 !important;
-  outline-offset:-3px;
-  cursor:pointer !important;
-  z-index:2147483645 !important;
-  position:relative !important;
+  outline: 3px dashed #ff4444 !important;
+  outline-offset: -3px;
+  cursor: pointer !important;
+  z-index: 2147483645 !important;
+  position: relative !important;
 }
 
-/* ==================== PARENT CLEAR ==================== */
 .zf-clear {
-  background:transparent !important;
-  background-color:transparent !important;
-  background-image:none !important;
-  box-shadow:none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
 }
 
-/* ==================== BRUSH MODE CURSOR ==================== */
 body.zf-brush,
 body.zf-brush * {
-  cursor:crosshair !important;
-  user-select:none !important;
+  cursor: crosshair !important;
+  user-select: none !important;
 }
 
-/* But hidden elements get pointer cursor to indicate they're clickable */
 body.zf-brush .zf-hidden {
-  cursor:pointer !important;
+  cursor: pointer !important;
 }
 
-/* Override Monaco editor cursor */
 body.zf-brush .monaco-editor,
 body.zf-brush .monaco-editor *,
 body.zf-brush .monaco-editor textarea {
-  cursor:crosshair !important;
+  cursor: crosshair !important;
 }
 
-/* ==================== HIGHLIGHT ==================== */
 .zf-highlight {
-  outline:3px solid #00d2ff !important;
-  outline-offset:-3px;
-  box-shadow:
-    inset 0 0 0 3px rgba(0,210,255,0.3),
-    0 0 20px rgba(0,210,255,0.6) !important;
-  z-index:2147483646 !important;
-  position:relative !important;
+  outline: 3px solid #3b82f6 !important;
+  outline-offset: -3px;
+  box-shadow: inset 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.6) !important;
+  z-index: 2147483646 !important;
+  position: relative !important;
 }
 
-/* Hidden elements get a different highlight color */
 body.zf-brush .zf-hidden.zf-highlight {
-  outline-color:#ff4444 !important;
-  box-shadow:
-    inset 0 0 0 3px rgba(255,68,68,0.4),
-    0 0 20px rgba(255,68,68,0.6) !important;
+  outline-color: #ff4444 !important;
+  box-shadow: inset 0 0 0 3px rgba(255, 68, 68, 0.4), 0 0 20px rgba(255, 68, 68, 0.6) !important;
 }
 
-/* ==================== ANIMATIONS ==================== */
 @keyframes slideIn {
   from {
-    opacity:0;
-    transform:translateX(-50%) translateY(-10px);
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
   }
   to {
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }

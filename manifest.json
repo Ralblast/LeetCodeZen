@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "LeetCode Flow State",
-  "version": "10.0",
-  "description": "Video backgrounds + Glass controls for LeetCode",
+  "version": "13.0",
+  "description": "Transform LeetCode with custom video backgrounds and adaptive glass UI",
   "permissions": ["storage", "activeTab", "scripting"],
   "host_permissions": ["https://leetcode.com/*"],
   "action": {
@@ -16,5 +16,10 @@
       "run_at": "document_end",
       "all_frames": false
     }
-  ]
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
 }
