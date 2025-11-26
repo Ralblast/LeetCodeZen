@@ -704,6 +704,59 @@ function init() {
       initFocusMode();
     }
   });
+
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Ignore if typing in input/textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      // Alt+1 = Toggle Fixed Focus
+      if (e.altKey && e.key === '1') {
+        e.preventDefault();
+        if (focusMode === 'fixed') {
+          disableFocusMode();
+          focusMode = 'off';
+          toast("Focus Off");
+        } else {
+          disableFocusMode();
+          focusMode = 'fixed';
+          initFocusMode();
+        }
+        chrome.storage.local.set({ zfFocusMode: focusMode });
+      }
+      
+      // Alt+2 = Toggle Dynamic Focus
+      if (e.altKey && e.key === '2') {
+        e.preventDefault();
+        if (focusMode === 'dynamic') {
+          disableFocusMode();
+          focusMode = 'off';
+          toast("Focus Off");
+        } else {
+          disableFocusMode();
+          focusMode = 'dynamic';
+          initFocusMode();
+        }
+        chrome.storage.local.set({ zfFocusMode: focusMode });
+      }
+      
+      // Alt+3 = Toggle Brush
+      if (e.altKey && e.key === '3') {
+        e.preventDefault();
+        if (brushActive) {
+          disableBrush();
+        } else {
+          enableBrush();
+        }
+      }
+      
+      // Alt+4 = Undo
+      if (e.altKey && e.key === '4') {
+        e.preventDefault();
+        undo();
+      }
+    });
+
   
   setTimeout(() => {
     ['__next', 'app', 'leetcode-navbar'].forEach(id => {
