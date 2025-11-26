@@ -460,16 +460,19 @@
   <div class="content">
     <div class="section">
       <div class="section-header" id="videoHeader">
-        <div class="section-title">Video Background</div>
+        <div class="section-title">Image/Video Background</div>
         <span class="toggle-icon" id="videoToggle">▼</span>
       </div>
       <div id="videoSection">
         <div class="two-col">
-          <input id="url" type="text" placeholder="YouTube, Vimeo, or MP4 URL">
+          <input id="url" type="text" placeholder="YouTube, Vimeo,Image or MP4 URL">
           <button id="addPlaylist" class="btn-secondary btn-icon">+</button>
         </div>
         <button id="apply" class="btn-primary">Apply</button>
         
+        <div id="playlist"></div>
+
+
         <div class="local-section">
           <div class="local-title">Local Videos</div>
           <div class="slider-row">
@@ -479,8 +482,18 @@
             <button id="useLocal" class="btn-secondary btn-icon" style="width: auto; margin: 0; padding: 7px 12px;">Use</button>
           </div>
         </div>
+
+          <div class="local-section">
+            <div class="local-title">Local Images</div>
+            <div class="slider-row">
+               <select id="localImagePicker">
+                 <option value="">Loading...</option>
+            </select>
+            <button id="useLocalImage" class="btn-secondary btn-icon" style="width: auto; margin: 0; padding: 7px 12px;">Use</button>
+          </div>
+        </div>
+
         
-        <div id="playlist"></div>
       </div>
     </div>
     
@@ -569,7 +582,14 @@
       <button id="reset" class="btn-danger">Reset</button>
     </div>
   </div>
-  
+
+    <!-- Supported Sources -->
+  <div class="hint-box" style="padding: 8px; font-size: 10px; text-align: center; color: #71717a; margin-top: 8px;">
+    <strong style="color: #a1a1aa;">Supported:</strong> 
+    Images (Unsplash, Pexels, Imgur) • Videos (YouTube, Vimeo, Pexels)
+  </div>
+
   <script src="popup.js"></script>
+  
 </body>
 </html>

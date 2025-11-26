@@ -109,7 +109,46 @@ function injectVideo(url) {
     document.body.appendChild(container);
   }
 
-  const videoUrl = url || DEFAULT_VIDEO;
+    let videoUrl = url || DEFAULT_VIDEO;
+
+    // Handle Pexels download URLs - convert to direct video URL
+    if (videoUrl.includes('pexels.com/download/video/')) {
+      const videoIdMatch = videoUrl.match(/\/video\/(\d+)/);
+      if (videoIdMatch) {
+        const videoId = videoIdMatch[1];
+        const params = new URLSearchParams(videoUrl.split('?')[1] || '');
+        const h = params.get('h') || '1080';
+        const w = params.get('w') || '1920';
+        const fps = Math.floor(parseFloat(params.get('fps') || '30'));
+        
+        // Construct direct Pexels video file URL
+        const quality = (parseInt(h) >= 2160) ? 'uhd' : 'hd';
+        videoUrl = `https://videos.pexels.com/video-files/${videoId}/${videoId}-${quality}_${w}_${h}_${fps}fps.mp4`;
+        toast('Loading Pexels video...');
+      }
+    }
+  
+  // ===== IMAGE SUPPORT ADDED HERE =====
+  // Check if URL is an image file
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+    const imageHosts = ['images.unsplash.com', 'picsum.photos', 'i.imgur.com', 'cdn.pixabay.com'];
+
+    const isImage = imageExtensions.some(ext => videoUrl.toLowerCase().includes(ext)) ||
+                    imageHosts.some(host => videoUrl.includes(host));
+
+  
+  if (isImage) {
+    container.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = videoUrl;
+    img.style.cssText = 'position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;width:auto;height:auto;transform:translate(-50%,-50%);object-fit:cover;';
+    img.onerror = () => {
+      toast('Image failed to load');
+    };
+    container.appendChild(img);
+    return; // Exit early, don't process as video
+  }
+  // ===== IMAGE SUPPORT END =====
   
   if (isYouTubeURL(videoUrl)) {
     const ytId = extractYouTubeID(videoUrl);
@@ -130,14 +169,7 @@ function injectVideo(url) {
         'showinfo=0'
       ].join('&');
       
-      container.innerHTML = `<iframe 
-        src="https://www.youtube.com/embed/${ytId}?${params}" 
-        allow="autoplay; encrypted-media" 
-        frameborder="0"
-        width="2560"
-        height="1440"
-        loading="eager"
-        allowfullscreen></iframe>`;
+      container.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?${params}" allow="autoplay; encrypted-media" frameborder="0" width="2560" height="1440" loading="eager" allowfullscreen></iframe>`;
       
       setTimeout(() => {
         const iframe = container.querySelector('iframe');
@@ -148,15 +180,10 @@ function injectVideo(url) {
         }
       }, 2000);
     }
-
   } else if (isVimeoURL(videoUrl)) {
     const vimeoId = extractVimeoID(videoUrl);
     if (vimeoId) {
-      container.innerHTML = `<iframe 
-        src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&background=1&quality=4k" 
-        frameborder="0"
-        allow="autoplay; fullscreen"
-        allowfullscreen></iframe>`;
+      container.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1&loop=1&muted=1&background=1&quality=4k" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
     }
   } else {
     container.innerHTML = '';
@@ -187,6 +214,8 @@ function injectVideo(url) {
     container.appendChild(video);
   }
 }
+
+
 
 function isYouTubeURL(url) {
   return url.includes('youtube.com') || url.includes('youtu.be');

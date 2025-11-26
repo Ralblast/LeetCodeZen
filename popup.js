@@ -21,6 +21,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   const localVideoPicker = document.getElementById("localVideoPicker");
   const useLocalBtn = document.getElementById("useLocal");
+
+  const localImagePicker = document.getElementById("localImagePicker");
+  const useLocalImageBtn = document.getElementById("useLocalImage");
+
   
   const blurSlider = document.getElementById("blurSlider");
   const blurValue = document.getElementById("blurValue");
@@ -86,6 +90,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
     }
+
+    
     
     localVideoPicker.innerHTML = '';
     
@@ -107,6 +113,59 @@ document.addEventListener("DOMContentLoaded", async () => {
       useLocalBtn.style.opacity = '1';
     }
   }
+
+
+async function loadLocalImages() {
+  localImagePicker.innerHTML = '<option value="">Scanning images folder...</option>';
+  useLocalImageBtn.disabled = true;
+
+  const commonNames = [
+    'space', 'lofi', 'nature', 'study', 'coding', 'rain', 'background',
+    'image1', 'image2', 'image3', 'image4', 'image5',
+    'wallpaper', 'scene', 'photo', 'bg'
+  ];
+  const extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+  const foundImages = [];
+
+  for (const name of commonNames) {
+    for (const ext of extensions) {
+      const filename = `${name}.${ext}`;
+      const url = chrome.runtime.getURL(`images/${filename}`);
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        if (response.ok) {
+          foundImages.push({
+            name: name.charAt(0).toUpperCase() + name.slice(1),
+            url: url,
+            filename: filename
+          });
+        }
+      } catch (e) {
+        // File doesn't exist, skip
+      }
+    }
+  }
+
+  localImagePicker.innerHTML = '';
+  if (foundImages.length === 0) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No images found in /images folder';
+    localImagePicker.appendChild(option);
+    useLocalImageBtn.disabled = true;
+    useLocalImageBtn.style.opacity = '0.5';
+  } else {
+    foundImages.forEach(image => {
+      const option = document.createElement('option');
+      option.value = image.url;
+      option.textContent = `${image.name} (${image.filename})`;
+      localImagePicker.appendChild(option);
+    });
+    useLocalImageBtn.disabled = false;
+    useLocalImageBtn.style.opacity = '1';
+  }
+ }
+
 
   chrome.storage.local.get([
     'zfVideo', 'zfPlaylist', 'zfBlur', 'zfFocusMode', 
@@ -156,6 +215,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   loadLocalVideos();
+  loadLocalImages();
+
   checkState();
 
   videoToggle.onclick = () => {
@@ -198,6 +259,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     setTimeout(() => useLocalBtn.textContent = "Use", 1000);
   };
 
+  useLocalImageBtn.onclick = async () => {
+    const url = localImagePicker.value;
+    if (!url) return;
+    
+    videoInput.value = url;
+    chrome.storage.local.set({ zfVideo: url });
+    await send({ action: "updateVideo", url });
+    useLocalImageBtn.textContent = "✓";
+    setTimeout(() => useLocalImageBtn.textContent = "Use", 1000);
+ };
+
+
   addPlaylistBtn.onclick = () => {
     const url = videoInput.value.trim();
     if (!url) return;
@@ -221,35 +294,70 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   };
 
-  function renderPlaylist(playlist) {
-    playlistContainer.innerHTML = '';
-    playlist.forEach((url, index) => {
-      const item = document.createElement('div');
-      item.className = 'playlist-item';
-      
-      const label = document.createElement('span');
-      label.textContent = `Video ${index + 1}`;
-      label.title = url;
-      label.onclick = async () => {
-        videoInput.value = url;
-        chrome.storage.local.set({ zfVideo: url });
-        await send({ action: "updateVideo", url });
-      };
-      
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = '×';
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.onclick = () => {
-        playlist.splice(index, 1);
-        chrome.storage.local.set({ zfPlaylist: playlist });
-        renderPlaylist(playlist);
-      };
-      
-      item.appendChild(label);
-      item.appendChild(deleteBtn);
-      playlistContainer.appendChild(item);
-    });
-  }
+function renderPlaylist(playlist) {
+  playlistContainer.innerHTML = '';
+  
+  playlist.forEach((url, index) => {
+    const item = document.createElement('div');
+    item.className = 'playlist-item';
+    
+    const label = document.createElement('span');
+    
+    // Detect if image or video
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'];
+    const imageHosts = ['images.unsplash.com', 'picsum.photos', 'i.imgur.com', 'images.pexels.com'];
+    
+    const isImage = imageExtensions.some(ext => url.toLowerCase().includes(ext)) ||
+                    imageHosts.some(host => url.includes(host));
+    
+    const isYouTube = url.includes('youtube.com') || url.includes('youtu.be');
+    const isVimeo = url.includes('vimeo.com');
+    const isPexelsVideo = url.includes('pexels.com/download/video') || url.includes('videos.pexels.com');
+    
+    let prefix = '📹 Video';
+    if (isImage) {
+      prefix = '🖼️ Image';
+    } else if (isYouTube) {
+      prefix = '▶️ YouTube';
+    } else if (isVimeo) {
+      prefix = '🎬 Vimeo';
+    } else if (isPexelsVideo) {
+      prefix = '🎥 Pexels';
+    }
+    
+    // Count how many of same type before this
+    const sameTypeBefore = playlist.slice(0, index).filter(u => {
+      const isSameImage = isImage && (imageExtensions.some(ext => u.toLowerCase().includes(ext)) || imageHosts.some(host => u.includes(host)));
+      const isSameYT = isYouTube && (u.includes('youtube.com') || u.includes('youtu.be'));
+      const isSameVimeo = isVimeo && u.includes('vimeo.com');
+      const isSamePexels = isPexelsVideo && (u.includes('pexels.com/download/video') || u.includes('videos.pexels.com'));
+      return isSameImage || isSameYT || isSameVimeo || isSamePexels;
+    }).length + 1;
+    
+    label.textContent = `${prefix} ${sameTypeBefore}`;
+    label.title = url;
+    
+    label.onclick = async () => {
+      videoInput.value = url;
+      chrome.storage.local.set({ zfVideo: url });
+      await send({ action: "updateVideo", url });
+    };
+    
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '×';
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.onclick = () => {
+      playlist.splice(index, 1);
+      chrome.storage.local.set({ zfPlaylist: playlist });
+      renderPlaylist(playlist);
+    };
+    
+    item.appendChild(label);
+    item.appendChild(deleteBtn);
+    playlistContainer.appendChild(item);
+  });
+}
+
 
   blurSlider.oninput = () => {
     const blur = parseFloat(blurSlider.value);
