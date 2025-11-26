@@ -658,6 +658,7 @@ function init() {
     document.body.style.setProperty('background', 'transparent', 'important');
     document.documentElement.style.setProperty('background', 'transparent', 'important');
   }, 1000);
+  
 }
 
 if (document.readyState === 'loading') {

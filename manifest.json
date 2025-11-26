@@ -16,6 +16,7 @@
       "run_at": "document_end",
       "all_frames": false
     }
+    
   ],
   "icons": {
     "16": "icon16.png",

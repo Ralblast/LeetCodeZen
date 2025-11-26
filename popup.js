@@ -405,6 +405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     stopBtn.style.display = "block";
     status.style.display = "block";
   }
+  
 
   function showStart() {
     brushBtn.style.display = "block";
