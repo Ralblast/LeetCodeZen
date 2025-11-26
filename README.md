@@ -48,8 +48,8 @@ A Chrome extension that transforms your LeetCode experience with customizable vi
 
 1. **Download the extension**
    ```bash
-   git clone https://github.com/yourusername/leetcode-flow-state.git
-   cd leetcode-flow-state
+   git clone  https://github.com/Ralblast/LeetCodeZen.git
+   cd LeetCodeZen
    ```
 
 2. **Load in Chrome**
