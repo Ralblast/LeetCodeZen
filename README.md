@@ -1,105 +1,215 @@
-# LeetCode Flow State
+# 🎯 LeetCode Flow State
 
-A Chrome extension that transforms your LeetCode experience with custom video backgrounds and adaptive glass UI.
+A Chrome extension that transforms your LeetCode experience with customizable video/image backgrounds and focus modes to help you enter a productive flow state while coding.
 
-## What is this?
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-green.svg)
 
-Tired of staring at LeetCode's plain interface during long coding sessions? This extension lets you set any video as your background (lofi beats, nature scenes, whatever works for you) and gives you full control over which UI elements you want to see.
+## ✨ Features
 
-The brush tool lets you click on any element to make it glass-like, transparent, or completely hidden. The focus mode automatically adjusts opacity and blur based on whether you're typing or thinking, so the video doesn't distract you mid-problem.
+### 🖼️ **Background Customization**
+- **Video Backgrounds**: YouTube, Vimeo, Pexels, or direct MP4 URLs
+- **Image Backgrounds**: Unsplash, Pexels, Imgur, or any direct image URL
+- **Local Media**: Use your own videos/images from local folders
+- **Playlist**: Save and quickly switch between favorite backgrounds
 
-## Installation
+### 🎨 **Aesthetic Mode**
+- Apply glass morphism effect to UI elements
+- Adjustable blur intensity (0-10px)
+- Customizable opacity levels
+- Make elements transparent or hidden
 
-1. Download or clone this repo
-2. Open Chrome and go to `chrome://extensions`
-3. Enable "Developer mode" (toggle in top right)
-4. Click "Load unpacked" and select the extension folder
-5. Open any LeetCode problem page
+### 🎯 **Focus Mode**
+- **Dynamic Focus**: Auto-adjusts when typing, helps reduce distractions
+- **Fixed Focus**: Constant dimmed UI for maximum concentration
+- Customizable timeout, opacity, and blur settings
 
-## Features
+### 🖌️ **Brush Mode**
+- Interactive element manipulation with mouse
+- Left-click: Toggle glass effect (55% → Transparent → 55%)
+- Right-click: Hide/restore elements
+- Arrow keys: Fine-tune opacity
+- Undo support (up to 15 actions)
 
-**Video Backgrounds**
-- YouTube or direct MP4 links
-- Saves up to 10 videos in a playlist
-- Auto-plays in 1080p (or best available quality)
+### ⌨️ **Keyboard Shortcuts**
+- `Alt + 1`: Toggle Fixed Focus
+- `Alt + 2`: Toggle Dynamic Focus
+- `Alt + 3`: Toggle Brush Mode
+- `Alt + 4`: Undo last action
+- `↑ / ↓`: Adjust opacity in Brush Mode
+- `Esc`: Exit Brush Mode
 
-**Brush Mode**
-- Left click: cycle between glass and transparent
-- Right click: hide or restore elements
-- Up/Down arrows: adjust opacity
-- Alt+Z: undo last change (stores last 15 actions)
+## 🚀 Installation
 
-**Focus Modes**
-- Dynamic: automatically applies when you type, reverts after 6 seconds idle
-- Fixed: stays on until you turn it off manually
-- Customize opacity (40-100%) and blur (0-7px) for each mode
+### Install from Chrome Web Store
+*Coming soon*
 
-**Quick Controls**
-- Two buttons at the top of the popup for instant mode switching
-- Collapsible sections to save space
-- All settings saved automatically
+### Manual Installation (Developer Mode)
 
-## Usage
+1. **Download the extension**
+   ```bash
+   git clone https://github.com/yourusername/leetcode-flow-state.git
+   cd leetcode-flow-state
+   ```
+
+2. **Load in Chrome**
+   - Open Chrome and go to `chrome://extensions/`
+   - Enable "Developer mode" (top right)
+   - Click "Load unpacked"
+   - Select the extension folder
+
+3. **Navigate to LeetCode**
+   - Go to [leetcode.com](https://leetcode.com)
+   - Click the extension icon to start customizing
+
+## 📖 Usage
+
+### Setting Up Background
 
 1. Click the extension icon
-2. Paste a video URL and hit "Apply"
-3. Click "Start Brush" to begin customizing
-4. Click elements to make them glass/transparent/hidden
-5. Press Escape when done
-6. Toggle Dynamic or Fixed focus mode if you want
+2. In the "Image/Video Background" section:
+   - Paste a URL (YouTube, Vimeo, Pexels, image URL)
+   - Or select from local videos/images dropdown
+3. Click "Apply"
+4. Use "+" button to add to playlist for quick access
 
-The aesthetic mode blur slider controls how blurry glass elements are when you're not actively coding.
+### Using Brush Mode
 
-## Tips
+1. Click "Start Brush" or press `Alt + 3`
+2. Hover over any element to highlight it
+3. **Left-click**: Cycle through glass effects
+4. **Right-click**: Hide/restore element
+5. **Arrow keys**: Fine-tune opacity
+6. Press `Esc` to exit
 
-- Start with the problem description - make it semi-transparent so you can see the video but still read
-- Hide the related topics section if it spoils solutions
-- Set Fixed mode to 90% opacity and 1px blur for hardcore focus
-- Dynamic mode with 6 seconds works well for interview prep (gives you thinking time)
+### Focus Mode
 
-## Settings
+**Dynamic Focus** (recommended for coding):
+- Dims UI when you start typing
+- Restores after timeout (default: 6 seconds)
+- Keeps you focused on code editor
 
-Everything persists across sessions:
-- Your video URL and playlist
+**Fixed Focus**:
+- Constant dimmed UI
+- Best for reading problem statements
+
+## 🎬 Supported Media Sources
+
+### Videos
+- ✅ YouTube (any video URL)
+- ✅ Vimeo (public videos only)
+- ✅ Pexels (auto-converts download links)
+- ✅ Direct MP4/WebM URLs
+- ✅ Local video files
+
+### Images
+- ✅ Unsplash
+- ✅ Pexels
+- ✅ Imgur
+- ✅ Picsum Photos
+- ✅ Any direct image URL (.jpg, .png, .gif, etc.)
+- ✅ Local image files
+
+## 📁 Adding Local Media
+
+1. Create `videos/` or `images/` folder in extension directory
+2. Add your files:
+   - Videos: `video1.mp4`, `lofi.mp4`, etc.
+   - Images: `image1.jpg`, `space.png`, etc.
+3. Files will appear in dropdown menu automatically
+4. Common names detected: space, lofi, nature, study, coding, rain, background
+
+## 🛠️ Project Structure
+
+```
+leetcode-flow-state/
+├── manifest.json          # Extension configuration
+├── content.js             # Main functionality
+├── popup.html             # Extension popup UI
+├── popup.js               # Popup logic
+├── styles.css             # Styling
+├── images/                # Local images folder
+│   └── .gitkeep
+├── videos/                # Local videos folder
+│   └── .gitkeep
+├── .gitignore             # Git ignore rules
+└── README.md              # This file
+```
+
+## ⚙️ Configuration
+
+All settings are automatically saved to Chrome storage:
+- Selected background URL
 - Blur amount
-- Focus mode settings
-- Which sections are collapsed in the popup
+- Focus mode preferences
+- Opacity settings
+- Playlist items
 
-The only thing that doesn't persist is which elements you've made glass/hidden (LeetCode's DOM structure changes too much between pages).
+## 🐛 Troubleshooting
 
-## Technical Notes
+**Video won't play?**
+- Ensure URL is a direct video file or supported platform
+- For Pexels: Right-click video → "Copy video address"
+- Private/restricted videos cannot be embedded
 
-- Only works on leetcode.com domains
-- Video background uses GPU acceleration for smooth performance
-- Undo history is limited to 15 actions to avoid memory issues
-- Sliders are debounced (150ms) to reduce message spam
+**Brush mode not working?**
+- Make sure you're on a LeetCode page
+- Try reloading the page
+- Check if extension has permissions
 
-## Keyboard Shortcuts
+**Extension not loading?**
+- Reload extension in `chrome://extensions/`
+- Check browser console for errors
+- Ensure you're on `leetcode.com` domain
 
-While brush mode is active:
-- **Left click** - Glass/Transparent toggle
-- **Right click** - Hide/Restore
-- **↑** - Increase opacity
-- **↓** - Decrease opacity  
-- **Alt+Z** - Undo
-- **Escape** - Exit brush mode
+## 💡 Tips for Best Experience
 
-## Known Issues
+- **For Coding**: Use Dynamic Focus with lofi video backgrounds
+- **For Reading**: Use Fixed Focus with minimal backgrounds
+- **For Customization**: Use Brush Mode to hide distracting elements
+- **Performance**: Images load faster than videos on slower connections
 
-- Focus mode doesn't work in brush mode (by design - prevents conflicts)
-- Transparent elements (0% opacity) are ignored by focus mode
-- If you switch problems mid-session, glass elements won't carry over
+## 🤝 Contributing
 
-## Why I Built This
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest new features
+- Submit pull requests
 
-I spend hours on LeetCode and the white interface was straining my eyes during night sessions. Started with just a video background, then added the glass UI because I liked having both the problem description and the video visible. Focus mode came from realizing I wanted different levels of distraction at different times.
+### Development
 
-Built it for myself but figured others might find it useful.
+1. Clone the repository
+2. Make your changes
+3. Test thoroughly on LeetCode
+4. Submit a pull request with description
 
-## License
+## 📝 License
 
-Not for any monetization purposes.
+MIT License - feel free to use this project however you'd like!
+
+## 🙏 Acknowledgments
+
+- Inspired by productivity and focus tools
+- Built for the LeetCode community
+- Background sources: YouTube, Vimeo, Pexels, Unsplash
+
+## 📧 Contact
+
+For questions or feedback, open an issue on GitHub.
+
+## 🔄 Changelog
+
+### Version 1.0.0 (Initial Release)
+- ✅ Video and image background support
+- ✅ Dynamic and Fixed Focus modes
+- ✅ Brush Mode for element customization
+- ✅ Playlist management
+- ✅ Local media support
+- ✅ Keyboard shortcuts
+- ✅ Undo functionality
 
 ---
 
-If something breaks or you have ideas, open an issue. I check GitHub sporadically but will get to it eventually.
+**Made with ❤️ for productive coding sessions**
+
+**Star ⭐ this repo if you find it helpful!**
