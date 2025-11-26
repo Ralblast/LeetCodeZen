@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      width:280px;
+      font:14px/1.5 -apple-system,sans-serif;
+      background:#1a1a2e;
+      color:#eee;
+      padding:16px;
+    }
+    h3 {
+        font-size:16px;
+        font-weight:600;
+        margin-bottom:16px;
+        background:linear-gradient(135deg,#667eea,#764ba2);
+        -webkit-background-clip:text;
+        background-clip:text;  /* Add this line */
+        -webkit-text-fill-color:transparent;
+    }
+
+    .group { margin-bottom:14px; }
+    label {
+      display:block;
+      font-size:11px;
+      color:#999;
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+    }
+    input {
+      width:100%;
+      padding:10px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.1);
+      border-radius:6px;
+      color:#fff;
+      font-size:13px;
+    }
+    input:focus {
+      outline:none;
+      border-color:#667eea;
+      background:rgba(255,255,255,0.08);
+    }
+    button {
+      width:100%;
+      padding:11px;
+      border:none;
+      border-radius:6px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform 0.2s;
+      margin-top:8px;
+    }
+    button:hover { transform:translateY(-1px); }
+    button:active { transform:translateY(0); }
+    .btn-primary { background:linear-gradient(135deg,#2ecc71,#27ae60); color:#fff; }
+    .btn-brush { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+    .btn-stop { background:linear-gradient(135deg,#f39c12,#e67e22); color:#fff; display:none; }
+    .btn-danger { background:linear-gradient(135deg,#e74c3c,#c0392b); color:#fff; }
+    .status {
+      display:none;
+      padding:8px;
+      background:rgba(102,126,234,0.2);
+      border:1px solid #667eea;
+      border-radius:6px;
+      text-align:center;
+      font-size:11px;
+      font-weight:600;
+      color:#667eea;
+      margin-bottom:8px;
+    }
+    .hint {
+      background:rgba(255,255,255,0.03);
+      padding:10px;
+      border-radius:6px;
+      font-size:11px;
+      line-height:1.6;
+      color:#888;
+      border-left:2px solid #667eea;
+    }
+    .hint b { color:#ccc; }
+  </style>
+</head>
+<body>
+  <h3>🎨 Flow State</h3>
+  
+  <div class="group">
+    <label>Video URL</label>
+    <input id="url" placeholder="YouTube or MP4 link">
+    <button id="apply" class="btn-primary">Set Video</button>
+  </div>
+  
+  <div class="group">
+    <div id="status" class="status">🖌️ BRUSH ACTIVE</div>
+    <button id="brush" class="btn-brush">Start Brush</button>
+    <button id="stop" class="btn-stop">Stop Brush</button>
+  </div>
+  
+  <div class="group">
+    <div class="hint">
+      <b>Left:</b> Cycle Glass/Transparent<br>
+      <b>Right:</b> Hide/Restore<br>
+      <b>↑↓:</b> Adjust opacity<br>
+      <b>ESC:</b> Exit brush
+    </div>
+  </div>
+  
+  <div class="group">
+    <button id="reset" class="btn-danger">Reset All</button>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
