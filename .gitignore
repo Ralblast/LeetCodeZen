@@ -1,2 +1,7 @@
+# Ignore all files in images and videos folders
+images/*
 videos/*
+
+# But keep the folders themselves
+!images/.gitkeep
 !videos/.gitkeep
