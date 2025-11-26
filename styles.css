@@ -111,3 +111,17 @@ body.zf-brush .zf-hidden.zf-highlight {
   }
   
 }
+
+.zf-glass button,
+.zf-glass select,
+.zf-glass input,
+.zf-glass textarea,
+.zf-glass a,
+.zf-glass [role="button"],
+.zf-glass [role="combobox"],
+.zf-glass [class*="btn"],
+.zf-glass [class*="Button"] {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10 !important;
+}

@@ -55,21 +55,29 @@ function addToHistory(element, action, previousState, previousOpacity) {
   }
 }
 
-function undo() {
+function undo(depth = 0) {
+  if (depth >= 3) {
+    toast("Undo limit reached");
+    return;
+  }
+  
   if (undoHistory.length === 0) {
     toast("Nothing to undo");
     return;
   }
-  
+
   const lastAction = undoHistory.pop();
   const el = document.querySelector(lastAction.selector);
   
   if (!el) {
     toast("Element no longer exists");
-    if (undoHistory.length > 0) return undo();
+    if (undoHistory.length > 0) {
+      return undo(depth + 1); // Add depth counter
+    }
     return;
   }
-  
+
+  // Rest of your undo logic stays exactly the same
   if (lastAction.previousState === 'normal') {
     el.classList.remove('zf-glass', 'zf-hidden');
     el.style.removeProperty('background-color');
@@ -89,6 +97,7 @@ function undo() {
   
   toast("Undone");
 }
+
 
 function injectVideo(url) {
   if (!isValid()) return;
@@ -439,10 +448,12 @@ function disableBrush() {
   document.removeEventListener('contextmenu', onRightClick, true);
   document.removeEventListener('keydown', onKeyDown, true);
   
-  if (hoveredElement) {
-    hoveredElement.classList.remove('zf-highlight');
-    hoveredElement = null;
-  }
+// Remove ALL highlights
+document.querySelectorAll('.zf-highlight').forEach(el => {
+  el.classList.remove('zf-highlight');
+});
+hoveredElement = null;
+
   
   stopWatchdog();
   toast("Brush Off");
@@ -461,12 +472,28 @@ function onHover(e) {
 function onLeftClick(e) {
   if (!brushActive) return;
   
+  const target = e.target;
+  const isButton = target.tagName === 'BUTTON' || target.closest('button');
+  const isSelect = target.tagName === 'SELECT' || target.closest('select');
+  const isInput = target.tagName === 'INPUT' || target.closest('input');
+  const isLink = target.tagName === 'A' || target.closest('a');
+  const hasButtonRole = target.getAttribute('role') === 'button' || 
+                        target.closest('[role="button"]');
+  const hasComboboxRole = target.getAttribute('role') === 'combobox' || 
+                          target.closest('[role="combobox"]');
+  
+  if (isButton || isSelect || isInput || isLink || hasButtonRole || hasComboboxRole) {
+    e.preventDefault(); // Block button from working
+    e.stopPropagation();
+    return; // But don't apply glass to it
+  }
+  
   e.preventDefault();
   e.stopPropagation();
   e.stopImmediatePropagation();
-  
   cycleTransparency(e.target);
 }
+
 
 function onRightClick(e) {
   if (!brushActive) return;
@@ -550,18 +577,14 @@ function startWatchdog() {
       stableCount = 0;
     } else {
       stableCount++;
-      
+      // Just reset counter, don't create new interval
       if (stableCount > 5) {
-        clearInterval(watchdogInterval);
-        watchdogInterval = setInterval(() => {
-          if (brushActive && !document.body.classList.contains('zf-brush')) {
-            document.body.classList.add('zf-brush');
-          }
-        }, 2000);
+        stableCount = 0; // Reset and continue with same interval
       }
     }
   }, 500);
 }
+
 
 function stopWatchdog() {
   if (watchdogInterval) {
