@@ -451,20 +451,45 @@ function clearParents(el) {
   }
 }
 
+
+//////////////////////////////////////////////////////////
+
+//most Recent changes, for refrence
+
+// NEW: Separate handler ONLY for blocking mousedown/mouseup/pointerdown
+function onMouseBlock(e) {
+  if (!brushActive) return;
+  
+  // ONLY block navigation events, don't apply glass here
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+  e.preventDefault();
+  return false;
+}
+
+
 function enableBrush() {
   if (brushActive) return;
   
   brushActive = true;
   document.body.classList.add('zf-brush');
   
-  document.addEventListener('mouseover', onHover, true);
-  document.addEventListener('click', onLeftClick, true);
-  document.addEventListener('contextmenu', onRightClick, true);
-  document.addEventListener('keydown', onKeyDown, true);
+  // Regular handlers
+  window.addEventListener('mouseover', onHover, true);
+  window.addEventListener('click', onLeftClick, true);
+  window.addEventListener('contextmenu', onRightClick, true);
+  window.addEventListener('keydown', onKeyDown, true);
+  
+  // BLOCKING ONLY handlers (don't apply glass, just block navigation)
+  window.addEventListener('mousedown', onMouseBlock, true);
+  window.addEventListener('mouseup', onMouseBlock, true);
+  window.addEventListener('pointerdown', onMouseBlock, true);
+  window.addEventListener('pointerup', onMouseBlock, true);
   
   startWatchdog();
   toast("Brush Active");
 }
+
 
 function disableBrush() {
   if (!brushActive) return;
@@ -472,21 +497,28 @@ function disableBrush() {
   brushActive = false;
   document.body.classList.remove('zf-brush');
   
-  document.removeEventListener('mouseover', onHover, true);
-  document.removeEventListener('click', onLeftClick, true);
-  document.removeEventListener('contextmenu', onRightClick, true);
-  document.removeEventListener('keydown', onKeyDown, true);
+  // Remove regular handlers
+  window.removeEventListener('mouseover', onHover, true);
+  window.removeEventListener('click', onLeftClick, true);
+  window.removeEventListener('contextmenu', onRightClick, true);
+  window.removeEventListener('keydown', onKeyDown, true);
   
-// Remove ALL highlights
-document.querySelectorAll('.zf-highlight').forEach(el => {
-  el.classList.remove('zf-highlight');
-});
-hoveredElement = null;
-
+  // Remove blocking handlers
+  window.removeEventListener('mousedown', onMouseBlock, true);
+  window.removeEventListener('mouseup', onMouseBlock, true);
+  window.removeEventListener('pointerdown', onMouseBlock, true);
+  window.removeEventListener('pointerup', onMouseBlock, true);
+  
+  // Remove ALL highlights
+  document.querySelectorAll('.zf-highlight').forEach(el => {
+    el.classList.remove('zf-highlight');
+  });
+  hoveredElement = null;
   
   stopWatchdog();
   toast("Brush Off");
 }
+
 
 function onHover(e) {
   if (!brushActive) return;
@@ -498,41 +530,38 @@ function onHover(e) {
   hoveredElement = e.target;
 }
 
+
 function onLeftClick(e) {
   if (!brushActive) return;
   
-  const target = e.target;
-  const isButton = target.tagName === 'BUTTON' || target.closest('button');
-  const isSelect = target.tagName === 'SELECT' || target.closest('select');
-  const isInput = target.tagName === 'INPUT' || target.closest('input');
-  const isLink = target.tagName === 'A' || target.closest('a');
-  const hasButtonRole = target.getAttribute('role') === 'button' || 
-                        target.closest('[role="button"]');
-  const hasComboboxRole = target.getAttribute('role') === 'combobox' || 
-                          target.closest('[role="combobox"]');
-  
-  if (isButton || isSelect || isInput || isLink || hasButtonRole || hasComboboxRole) {
-    e.preventDefault(); // Block button from working
-    e.stopPropagation();
-    return; // But don't apply glass to it
-  }
-  
-  e.preventDefault();
-  e.stopPropagation();
+  // Block the click from doing anything
   e.stopImmediatePropagation();
+  e.stopPropagation();
+  e.preventDefault();
+  
+  // Apply glass effect
   cycleTransparency(e.target);
+  
+  return false;
 }
 
 
 function onRightClick(e) {
   if (!brushActive) return;
   
-  e.preventDefault();
-  e.stopPropagation();
   e.stopImmediatePropagation();
+  e.stopPropagation();
+  e.preventDefault();
   
   toggleHidden(e.target);
+  
+  return false;
 }
+
+
+
+////////////////////////////////////////////////////////
+
 
 function onKeyDown(e) {
   if (!brushActive) return;
@@ -563,6 +592,11 @@ function onKeyDown(e) {
     adjustOpacity(hoveredElement, -0.05);
   }
 }
+
+
+
+
+
 
 function toast(msg) {
   if (toastTimer) clearTimeout(toastTimer);
